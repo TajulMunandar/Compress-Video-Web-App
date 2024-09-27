@@ -3,7 +3,7 @@
 
 <head>
     @include('layout.head')
-    <title>Rekomendasi Skincare</title>
+    <title>Compress Video</title>
     @yield('css')
 </head>
 

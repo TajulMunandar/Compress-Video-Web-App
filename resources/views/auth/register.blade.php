@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-    <title>Rekomendasi Skincare</title>
+    <title>Compress Video</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--===============================================================================================-->
-    <link rel="icon" type="image/png" href="{{ asset('assets/img/logo2.png') }}" />
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/logo.svg') }}" />
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/bootstrap/css/bootstrap.min.css') }}">
     <!--===============================================================================================-->
@@ -111,7 +111,7 @@
                     </div>
                 </form>
 
-                <div class="login100-more" style="background-image: url('assets/login/images/bg-01.jpg');">
+                <div class="login100-more" style="background-image: url('assets/img/badge.jpg');">
                 </div>
             </div>
         </div>
