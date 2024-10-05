@@ -27,10 +27,10 @@ class RegisterController extends Controller
         $user = User::create($validatedData);
 
         if ($user) {
-            return redirect()->route('login')->with('success', 'Register Berhasil!');
+            return redirect()->route('login')->with('success', 'Register Successfully!');
         } else {
             // Jika pembuatan pengguna gagal
-            return redirect()->route('register.index')->with('failed', 'Register Tidak Berhasil!');;
+            return redirect()->route('register.index')->with('failed', 'Register Failed!');;
         }
     }
 }
