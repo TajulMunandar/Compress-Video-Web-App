@@ -22,8 +22,11 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            return redirect()->intended('/');
+            if (Auth::user()->isAdmin == 1) {
+                return redirect()->intended('/');
+            } else {
+                return redirect()->intended('/main');
+            }
         }
 
         return back()->with('failed', 'Login Gagal, periksa kembali username atau password anda!');

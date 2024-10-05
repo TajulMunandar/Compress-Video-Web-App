@@ -30,7 +30,7 @@
                             <path fill-rule="evenodd"
                                 d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
                         </svg></i>
-                    Tambah
+                    Add
                 </button>
 
                 <div class="card mt-3 col-sm-6 col-md-12 mb-3">
@@ -82,7 +82,7 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data User</h5>
+                                                    <h5 class="modal-title" id="exampleModalLabel">Delete User Data</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
@@ -91,15 +91,14 @@
                                                     @method('delete')
                                                     @csrf
                                                     <div class="modal-body">
-                                                        <p>Apakah Anda Yakin Ingin Menghapus Data
-                                                            <b>{{ $user->name }}</b>
-                                                            ini?
+                                                        <p>Are you sure you want to delete the data of
+                                                            <b>{{ $user->name }}</b>?
                                                         </p>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-danger">hapus
+                                                        <button type="submit" class="btn btn-danger">Delete
                                                         </button>
                                                     </div>
                                                 </form>
@@ -114,7 +113,7 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Edit Data User</h5>
+                                                    <h5 class="modal-title" id="exampleModalLabel">Edit User Data </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
@@ -125,7 +124,7 @@
                                                     <div class="modal-body">
                                                         <div class="row">
                                                             <div class="mb-3">
-                                                                <label for="name" class="form-label">Nama</label>
+                                                                <label for="name" class="form-label">Name</label>
                                                                 <input type="text"
                                                                     class="form-control @error('name') is-invalid @enderror"
                                                                     name="name" id="name" placeholder="Anton"
@@ -173,7 +172,7 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-warning">Perbarui</button>
+                                                        <button type="submit" class="btn btn-warning">Edit</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -187,7 +186,8 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Ubah Password User</h5>
+                                                    <h5 class="modal-title" id="exampleModalLabel">Change User Password
+                                                    </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
@@ -198,8 +198,8 @@
                                                         <div class="row">
                                                             <div class="mb-3">
                                                                 <input type="hidden" name="id" id="">
-                                                                <label for="password" class="form-label">Password
-                                                                    Baru</label>
+                                                                <label for="password" class="form-label">New Password
+                                                                </label>
                                                                 <input type="text"
                                                                     class="form-control @error('password') is-invalid @enderror"
                                                                     name="password" id="password" autofocus required>
@@ -210,7 +210,7 @@
                                                                 @enderror
                                                             </div>
                                                             <div class="mb-3">
-                                                                <label for="password2" class="form-label">Konfirmasi
+                                                                <label for="password2" class="form-label">Confirm New
                                                                     Password</label>
                                                                 <input type="text"
                                                                     class="form-control @error('password2') is-invalid @enderror"
@@ -226,7 +226,7 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-dark">Perbarui</button>
+                                                        <button type="submit" class="btn btn-dark">Submit</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -247,7 +247,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Tambah Data User</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Add User Data</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data">
@@ -255,7 +255,7 @@
                         <div class="modal-body">
                             <div class="row">
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Nama</label>
+                                    <label for="name" class="form-label">Name</label>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
                                         name="name" id="name" placeholder="Anton" autofocus required>
                                     @error('name')
@@ -302,7 +302,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Tambah</button>
+                            <button type="submit" class="btn btn-primary">Add</button>
                         </div>
                     </form>
                 </div>

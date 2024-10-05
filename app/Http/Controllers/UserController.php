@@ -43,9 +43,9 @@ class UserController extends Controller
 
             User::create($validatedData);
 
-            return redirect()->route('user.index')->with('success', "Data User $request->name berhasil diperbarui!");
+            return redirect()->route('user.index')->with('success', "User data for $request->name has been successfully updated!");
         } catch (\Illuminate\Validation\ValidationException $exception) {
-            return redirect()->route('user.index')->with('failed', "Data $request->name gagal dibuat! " . $exception->getMessage());
+            return redirect()->route('user.index')->with('failed', "Failed to create data for $request->name!" . $exception->getMessage());
         }
     }
 
@@ -81,9 +81,9 @@ class UserController extends Controller
 
             User::where('id', $user->id)->update($validatedData);
 
-            return redirect()->route('user.index')->with('success', "Data User $user->name berhasil diperbarui!");
+            return redirect()->route('user.index')->with('success', "User data for $user->name has been successfully updated!");
         } catch (\Illuminate\Validation\ValidationException $exception) {
-            return redirect()->route('user.index')->with('failed', 'Data gagal diperbarui! ' . $exception->getMessage());
+            return redirect()->route('user.index')->with('failed', 'Failed to update data!' . $exception->getMessage());
         }
     }
 
@@ -97,11 +97,11 @@ class UserController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() == 23000) {
                 //SQLSTATE[23000]: Integrity constraint violation
-                return redirect()->route('user.index')->with('failed', "User $user->name tidak dapat dihapus, karena sedang digunakan pada tabel lain!");
+                return redirect()->route('user.index')->with('failed', "User $user->name cannot be deleted because it is being used in another table!");
             }
         }
 
-        return redirect()->route('user.index')->with('success', "User $user->name berhasil dihapus!");
+        return redirect()->route('user.index')->with('success', "User $user->name has been successfully deleted!");
     }
 
     public function resetPasswordAdmin(Request $request, User $user)
@@ -116,12 +116,12 @@ class UserController extends Controller
                 $validatedData['password'] = Hash::make($validatedData['password']);
 
                 $user->update($validatedData);
-                return redirect()->route('user.index')->with('success', 'Password berhasil diubah!');
+                return redirect()->route('user.index')->with('success', 'Password has been successfully changed!');
             } else {
-                return back()->with('failed', 'Konfirmasi password tidak sesuai!');
+                return back()->with('failed', 'Password confirmation does not match!');
             }
         } catch (\Exception $e) {
-            return back()->with('failed', 'Terjadi kesalahan: ' . $e->getMessage());
+            return back()->with('failed', 'An error occurred: ' . $e->getMessage());
         }
     }
 }

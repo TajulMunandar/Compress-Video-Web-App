@@ -11,6 +11,10 @@ Route::get('/', function () {
     return redirect('/dashboard');
 });
 
+Route::get('/main', function () {
+    return view('welcome');
+})->middleware('auth');
+
 Route::prefix('/dashboard')->middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/history', VideoController::class);

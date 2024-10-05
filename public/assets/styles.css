@@ -1,0 +1,76 @@
+body {
+    font-family: "Helvetica", sans-serif;
+}
+
+.hero-section {
+    background-color: #f5f9ff;
+    padding: 100px 0;
+}
+
+.drag-over {
+    background-color: #e9ecef;
+    border: 2px dashed #007bff;
+}
+
+.drag-text {
+    color: #6c757d;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.hero-section p {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.hero-section img {
+    width: 80%;
+    max-width: 400px;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.explore-section {
+    background-color: #eef2f8;
+    padding: 50px 0;
+}
+
+.explore-section h2 {
+    font-size: 2rem;
+    color: #333;
+}
+
+.explore-section a.btn {
+    font-size: 1.1rem;
+    padding: 12px 30px;
+}
+
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+}

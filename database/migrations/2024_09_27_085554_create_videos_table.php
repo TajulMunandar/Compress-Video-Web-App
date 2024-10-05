@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('videos', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->double('ori');
+            $table->double('comp');
             $table->string('dir');
             $table->foreignId('id_user')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
