@@ -32,7 +32,9 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Name</th>
+                                    <th>File Name</th>
+                                    <th>Original Size</th>
+                                    <th>Compressed Size</th>
                                     <th>Directory</th>
                                     <th>User</th>
                                 </tr>
@@ -42,6 +44,8 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $history->name }}</td>
+                                        <td>{{ number_format($history->ori / 1048576, 2) }} MB</td> <!-- Convert to MB -->
+                                        <td>{{ number_format($history->comp / 1048576, 2) }} MB</td> <!-- Convert to MB -->
                                         <td>{{ $history->dir }}</td>
                                         <td>{{ $history->User->name }}</td>
                                     </tr>

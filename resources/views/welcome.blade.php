@@ -73,8 +73,8 @@
                             <!-- File Name Display -->
                             <p id="fileNameDisplay" class="text-muted"></p>
                             <!-- Submit Button -->
-                            <button id="submitBtn" class="btn btn-primary d-none">Submit</button>
                         </div>
+                        <button id="submitBtn" type="button " class="btn btn-primary d-none p-3">Submit</button>
                     </div>
                 </div>
 
@@ -93,36 +93,21 @@
                     <tr>
                         <th>#</th>
                         <th>File Name</th>
-                        <th>Original Size</th>
-                        <th>Compressed Size</th>
+                        <th>Original Size (MB)</th>
+                        <th>Compressed Size (MB)</th>
                         <th>Date</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>video.mp4</td>
-                        <td>50 MB</td>
-                        <td>20 MB</td>
-                        <td>2024-10-01</td>
-
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>presentation.mp4</td>
-                        <td>100 MB</td>
-                        <td>40 MB</td>
-                        <td>2024-09-28</td>
-
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>movie.mp4</td>
-                        <td>200 MB</td>
-                        <td>80 MB</td>
-                        <td>2024-09-25</td>
-
-                    </tr>
+                    @foreach ($historys as $history)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $history->name }}</td>
+                            <td>{{ number_format($history->ori / 1048576, 2) }} MB</td> <!-- Convert to MB -->
+                            <td>{{ number_format($history->comp / 1048576, 2) }} MB</td> <!-- Convert to MB -->
+                            <td>{{ $history->created_at->format('Y-m-d H:i:s') }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -135,50 +120,107 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var dropZonePreOrder = document.getElementById('dropZonePreOrder');
+            var preOrderUpload = document.getElementById('preOrderUpload');
+            var fileNameDisplay = document.getElementById('fileNameDisplay');
+            var submitBtn = document.getElementById('submitBtn');
+
+            dropZonePreOrder.addEventListener('click', function() {
+                preOrderUpload.click();
+            });
+
+            preOrderUpload.addEventListener('change', function() {
+                displayFileName(preOrderUpload.files);
+            });
+
+            dropZonePreOrder.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropZonePreOrder.classList.add('drag-over');
+            });
+
+            dropZonePreOrder.addEventListener('dragleave', function() {
+                dropZonePreOrder.classList.remove('drag-over');
+            });
+
+            dropZonePreOrder.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropZonePreOrder.classList.remove('drag-over');
+                preOrderUpload.files = e.dataTransfer.files;
+                displayFileName(e.dataTransfer.files);
+            });
+
+            function displayFileName(files) {
+                if (files.length > 0) {
+                    fileNameDisplay.textContent = "File: " + files[0].name;
+                    submitBtn.classList.remove('d-none');
+                } else {
+                    fileNameDisplay.textContent = "";
+                    submitBtn.classList.add('d-none');
+                }
+            }
+
+            submitBtn.addEventListener('click', function() {
+                var file = preOrderUpload.files[0];
+                var formData = new FormData();
+                formData.append('file', file); // Sesuaikan dengan nama input
+
+                fetch('http://127.0.0.1:5000/compress', { // Ganti dengan URL Flask Anda
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        console.log('Response:', response); // Log respons untuk debugging
+                        return response.json(); // Ambil sebagai JSON
+                    })
+                    .then(data => {
+                        console.log('Data:', data); // Lihat apa isi datanya
+                        if (data.message) {
+                            alert('Video berhasil dikompres: ' + data.compressed_file_path);
+                            console.log('Ukuran Asli:', data.original_size, 'bytes');
+                            console.log('Ukuran Setelah Kompres:', data.compressed_size, 'bytes');
+                            saveVideoData(data.original_size, data.compressed_size, data
+                                .compressed_file_path, data.original_name);
+                        } else {
+                            alert('Terjadi kesalahan saat mengompresi video');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+
+            function saveVideoData(originalSize, compressedSize, compressedFilePath, original_name) {
+                // Implement API call to save data to Laravel backend
+                fetch('/main', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json' // Specify JSON content type
+                        },
+                        body: JSON.stringify({
+                            name: original_name, // Use the original file name
+                            ori: originalSize,
+                            comp: compressedSize,
+                            dir: compressedFilePath
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Data video berhasil disimpan!');
+                        } else {
+                            alert('Gagal menyimpan data video.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error while saving video data:', error);
+                    });
+            }
+        });
+    </script>
+
 </body>
 
 </html>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Pre-order drop zone
-        var dropZonePreOrder = document.getElementById('dropZonePreOrder');
-        var preOrderUpload = document.getElementById('preOrderUpload');
-        var fileNameDisplay = document.getElementById('fileNameDisplay');
-        var submitBtn = document.getElementById('submitBtn');
-
-        dropZonePreOrder.addEventListener('click', function() {
-            preOrderUpload.click();
-        });
-
-        preOrderUpload.addEventListener('change', function() {
-            displayFileName(preOrderUpload.files);
-        });
-
-        dropZonePreOrder.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            dropZonePreOrder.classList.add('drag-over');
-        });
-
-        dropZonePreOrder.addEventListener('dragleave', function() {
-            dropZonePreOrder.classList.remove('drag-over');
-        });
-
-        dropZonePreOrder.addEventListener('drop', function(e) {
-            e.preventDefault();
-            dropZonePreOrder.classList.remove('drag-over');
-            preOrderUpload.files = e.dataTransfer.files; // Set dropped files to input
-            displayFileName(e.dataTransfer.files);
-        });
-
-        function displayFileName(files) {
-            if (files.length > 0) {
-                fileNameDisplay.textContent = "File: " + files[0].name; // Show the file name
-                submitBtn.classList.remove('d-none'); // Show the submit button
-            } else {
-                fileNameDisplay.textContent = "";
-                submitBtn.classList.add('d-none'); // Hide the submit button
-            }
-        }
-    });
-</script>

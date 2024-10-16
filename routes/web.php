@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MainController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoController;
@@ -11,9 +12,8 @@ Route::get('/', function () {
     return redirect('/dashboard');
 });
 
-Route::get('/main', function () {
-    return view('welcome');
-})->middleware('auth');
+Route::get('/main', [MainController::class, 'index'])->middleware('auth');
+Route::post('/main', [MainController::class, 'compressVideo'])->middleware('auth');
 
 Route::prefix('/dashboard')->middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
