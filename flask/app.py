@@ -34,7 +34,7 @@ def compress_video():
 
         # Compress video using Huffman Coding
         huffman_coding = huffman.HuffmanCoding(filepath)
-        compressed_file_path = huffman_coding.compress()
+        compressed_file_path, process_graph_path = huffman_coding.compress()
 
         huffman_coding.decompress(compressed_file_path)
 
@@ -48,6 +48,7 @@ def compress_video():
                 "original_size": original_size,
                 "compressed_size": compressed_size,
                 "original_name": filename,
+                "process_graph_path": process_graph_path,
             }
         )
 

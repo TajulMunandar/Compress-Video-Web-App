@@ -1,6 +1,6 @@
 import heapq
 import os
-
+import matplotlib.pyplot as plt
 
 class HuffmanCoding:
     def __init__(self, path):
@@ -8,6 +8,8 @@ class HuffmanCoding:
         self.heap = []
         self.codes = {}
         self.reverse_mapping = {}
+        self.initial_heap_sizes = []  # Ukuran heap sebelum penggabungan
+        self.merge_heap_sizes = []    # Ukuran heap selama proses penggabungan
 
     class HeapNode:
         def __init__(self, char, freq):
@@ -19,19 +21,11 @@ class HuffmanCoding:
         def __lt__(self, other):
             return self.freq < other.freq
 
-    # Compression methods
-    def make_frequency_dict(self, data):
-        frequency = {}
-        for byte in data:
-            if byte not in frequency:
-                frequency[byte] = 0
-            frequency[byte] += 1
-        return frequency
-
     def make_heap(self, frequency):
         for key in frequency:
             node = self.HeapNode(key, frequency[key])
             heapq.heappush(self.heap, node)
+            self.initial_heap_sizes.append(len(self.heap))  # Save initial heap size
 
     def merge_nodes(self):
         while len(self.heap) > 1:
@@ -41,6 +35,34 @@ class HuffmanCoding:
             merged.left = node1
             merged.right = node2
             heapq.heappush(self.heap, merged)
+            self.merge_heap_sizes.append(len(self.heap))  # Save heap size after merge
+
+    def plot_compression_process(self, graph_path):
+        plt.figure(figsize=(10, 6))
+
+        # Plot initial heap sizes
+        plt.plot(self.initial_heap_sizes, marker="o", linestyle="-", color="g", label="Initial Heap Sizes")
+
+        # Plot merged heap sizes
+        merge_step_start = len(self.initial_heap_sizes)
+        merge_steps = list(range(merge_step_start, merge_step_start + len(self.merge_heap_sizes)))
+        plt.plot(merge_steps, self.merge_heap_sizes, marker="o", linestyle="-", color="r", label="Heap Sizes During Merging")
+
+        plt.title("Heap Size Before and During Huffman Compression Process")
+        plt.xlabel("Step in Compression Process")
+        plt.ylabel("Heap Size")
+        plt.legend()
+        plt.grid(True)
+        plt.savefig(graph_path)
+        plt.close()
+
+    def make_frequency_dict(self, data):
+        frequency = {}
+        for byte in data:
+            if byte not in frequency:
+                frequency[byte] = 0
+            frequency[byte] += 1
+        return frequency
 
     def make_codes_helper(self, root, current_code):
         if root is None:
@@ -81,6 +103,10 @@ class HuffmanCoding:
     def compress(self):
         filename, _ = os.path.splitext(self.path)
         output_path = filename + ".bin"
+
+        # Generate a path to save the process graph
+        process_graph_path = filename + "_compression_process.png"
+
         with open(self.path, "rb") as file:
             data = file.read()
             frequency = self.make_frequency_dict(data)
@@ -95,8 +121,11 @@ class HuffmanCoding:
             with open(output_path, "wb") as output:
                 output.write(bytes(byte_array))
 
+        # Save the process graph after compression
+        self.plot_compression_process(process_graph_path)
+
         print("Compressed")
-        return output_path
+        return output_path, process_graph_path
 
     def remove_padding(self, padded_encoded_text):
         padded_info = padded_encoded_text[:8]
