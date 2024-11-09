@@ -10,6 +10,7 @@
 {{-- Font Awesome Icons --}}
 <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.1.2/css/all.css">
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <!-- JQuery -->
 <script src="{{ asset('assets/jquery/dist/jquery-3.6.3.min.js') }}"></script>

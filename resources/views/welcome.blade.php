@@ -7,6 +7,7 @@
     <title> Compress Video</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('assets/styles.css') }}">
 </head>
 
@@ -74,7 +75,19 @@
                             <p id="fileNameDisplay" class="text-muted"></p>
                             <!-- Submit Button -->
                         </div>
-                        <button id="submitBtn" type="button " class="btn btn-primary d-none p-3">Submit</button>
+                        <button id="submitBtn" type="button " class="btn btn-primary d-none p-3">Submit
+                        </button>
+
+                        <div class="row" id="loadingAnimation" style="display: none;">
+                            <div class="col d-flex justify-content-center">
+                                <dotlottie-player
+                                    src="https://lottie.host/d96e620c-4e2b-4c32-b9a5-8675f7e3949f/b7miD7SFun.json"
+                                    background="transparent" speed="1" style="width: 300px; height: 150px;" loop
+                                    autoplay>
+                                </dotlottie-player>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -93,9 +106,11 @@
                     <tr>
                         <th>#</th>
                         <th>File Name</th>
-                        <th>Original Size (MB)</th>
-                        <th>Compressed Size (MB)</th>
+                        <th>Original Size (KB)</th>
+                        <th>Compressed Size (KB)</th>
                         <th>Date</th>
+                        <th>File</th>
+                        <th>Process</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,10 +118,52 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $history->name }}</td>
-                            <td>{{ number_format($history->ori / 1048576, 2) }} MB</td> <!-- Convert to MB -->
-                            <td>{{ number_format($history->comp / 1048576, 2) }} MB</td> <!-- Convert to MB -->
+                            <td>{{ $history->ori }}</td> <!-- Convert to MB -->
+                            <td>{{ $history->comp }} </td> <!-- Convert to MB -->
                             <td>{{ $history->created_at->format('Y-m-d H:i:s') }}</td>
+                            <td>
+                                <a class="btn btn-info text-white" href="#" download="{{ $history->dir }}">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal{{ $loop->iteration }}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+
+                            </td>
                         </tr>
+
+                        <div class="modal fade" id="exampleModal{{ $loop->iteration }}" tabindex="-1"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal Image</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @php
+                                            // Ganti ekstensi file dari .mp4 ke .png
+                                            $imagePath = str_replace(
+                                                ['public/', '\\', '.mp4'],
+                                                ['', '/', '.png'],
+                                                $history->dir,
+                                            );
+                                        @endphp
+                                        <img src="{{ asset($imagePath) }}" alt="Thumbnail"
+                                            style="width: 100%; height: auto;">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
                 </tbody>
             </table>
@@ -119,11 +176,16 @@
         </div>
     </footer>
 
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var dropZonePreOrder = document.getElementById('dropZonePreOrder');
             var preOrderUpload = document.getElementById('preOrderUpload');
+            var loadingAnimation = document.getElementById('loadingAnimation');
             var fileNameDisplay = document.getElementById('fileNameDisplay');
             var submitBtn = document.getElementById('submitBtn');
 
@@ -162,6 +224,8 @@
             }
 
             submitBtn.addEventListener('click', function() {
+                submitBtn.classList.add('d-none');
+                loadingAnimation.style.display = 'block';
                 var file = preOrderUpload.files[0];
                 var formData = new FormData();
                 formData.append('file', file); // Sesuaikan dengan nama input
@@ -188,6 +252,10 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
+                    }).finally(() => {
+                        // Tampilkan kembali tombol submit dan sembunyikan animasi
+                        loadingAnimation.style.display = 'none';
+                        submitBtn.classList.remove('d-none');
                     });
             });
 

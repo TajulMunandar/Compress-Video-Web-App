@@ -2,6 +2,7 @@ import heapq
 import os
 import matplotlib.pyplot as plt
 
+
 class HuffmanCoding:
     def __init__(self, path):
         self.path = path
@@ -9,7 +10,7 @@ class HuffmanCoding:
         self.codes = {}
         self.reverse_mapping = {}
         self.initial_heap_sizes = []  # Ukuran heap sebelum penggabungan
-        self.merge_heap_sizes = []    # Ukuran heap selama proses penggabungan
+        self.merge_heap_sizes = []  # Ukuran heap selama proses penggabungan
 
     class HeapNode:
         def __init__(self, char, freq):
@@ -41,12 +42,27 @@ class HuffmanCoding:
         plt.figure(figsize=(10, 6))
 
         # Plot initial heap sizes
-        plt.plot(self.initial_heap_sizes, marker="o", linestyle="-", color="g", label="Initial Heap Sizes")
+        plt.plot(
+            self.initial_heap_sizes,
+            marker="o",
+            linestyle="-",
+            color="g",
+            label="Initial Heap Sizes",
+        )
 
         # Plot merged heap sizes
         merge_step_start = len(self.initial_heap_sizes)
-        merge_steps = list(range(merge_step_start, merge_step_start + len(self.merge_heap_sizes)))
-        plt.plot(merge_steps, self.merge_heap_sizes, marker="o", linestyle="-", color="r", label="Heap Sizes During Merging")
+        merge_steps = list(
+            range(merge_step_start, merge_step_start + len(self.merge_heap_sizes))
+        )
+        plt.plot(
+            merge_steps,
+            self.merge_heap_sizes,
+            marker="o",
+            linestyle="-",
+            color="r",
+            label="Heap Sizes During Merging",
+        )
 
         plt.title("Heap Size Before and During Huffman Compression Process")
         plt.xlabel("Step in Compression Process")
@@ -105,7 +121,7 @@ class HuffmanCoding:
         output_path = filename + ".bin"
 
         # Generate a path to save the process graph
-        process_graph_path = filename + "_compression_process.png"
+        process_graph_path = filename + ".png"
 
         with open(self.path, "rb") as file:
             data = file.read()
@@ -147,7 +163,7 @@ class HuffmanCoding:
 
     def decompress(self, input_path):
         filename, _ = os.path.splitext(self.path)
-        output_path = filename + "_decompressed.mp4"
+        output_path = filename + ".mp4"
 
         with open(input_path, "rb") as file:
             bit_string = ""

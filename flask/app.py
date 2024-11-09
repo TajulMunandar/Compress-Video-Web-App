@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 import os
 from flask_cors import CORS
@@ -6,7 +6,7 @@ import huffman
 
 app = Flask(__name__)
 CORS(app)
-UPLOAD_FOLDER = "uploads"
+UPLOAD_FOLDER = "public/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # Create upload folder if it doesn't exist
