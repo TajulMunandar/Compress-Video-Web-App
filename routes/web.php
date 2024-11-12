@@ -17,15 +17,16 @@ Route::get('/', function () {
 Route::get('/main', [MainController::class, 'index'])->middleware('auth');
 Route::post('/main', [MainController::class, 'compressVideo'])->middleware('auth');
 
-Route::get('/download/{filename}', function ($filename) {
+Route::get('/download-file/{filename}', function ($filename) {
+    $filePath = public_path('uploads' . DIRECTORY_SEPARATOR . $filename);
 
-    $path = public_path('uploads/' . $filename);
-    if (file_exists($path)) {
-        return Response::download($path, basename($filename)); // Menggunakan basename untuk nama file yang benar
+    if (file_exists($filePath)) {
+        return response()->download($filePath, $filename);
     } else {
-        abort(404, 'File not found'); // Jika file tidak ditemukan, beri respons 404
+        abort(404, 'File not found.');
     }
-});
+})->name('download.file');
+
 
 
 Route::prefix('/dashboard')->middleware('auth')->group(function () {

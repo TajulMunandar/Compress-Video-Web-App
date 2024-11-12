@@ -25,14 +25,15 @@ class MainController extends Controller
             // Include any other validations as needed
         ]);
 
-        // Save the video data to the database
-        Video::create([
+        $video = new Video();
+        $video->fill([
             'name' => $request->name,
             'ori' => $request->ori,
             'comp' => $request->comp,
-            'dir' => $request->dir,
+            'dir' => $request->dir,  // Di sini mutator akan berjalan
             'id_user' => Auth::user()->id,
         ]);
+        $video->save();
 
         return response()->json(['success' => true]);
     }

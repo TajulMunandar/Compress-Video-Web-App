@@ -122,7 +122,11 @@
                             <td>{{ $history->comp }} </td> <!-- Convert to MB -->
                             <td>{{ $history->created_at->format('Y-m-d H:i:s') }}</td>
                             <td>
-                                <a class="btn btn-info text-white" href="#" download="{{ $history->dir }}">
+                                @php
+                                    $path = str_replace('\\', '/', $history->dir);
+                                @endphp
+                                <a class="btn btn-info text-white"
+                                    href="{{ route('download.file', basename($history->dir)) }}">
                                     <i class="bi bi-download"></i>
                                 </a>
                             </td>

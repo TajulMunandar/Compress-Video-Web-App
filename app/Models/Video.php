@@ -13,6 +13,16 @@ class Video extends Model
         'id'
     ];
 
+    public function setDirAttribute($value)
+    {
+        // Cek jika nilai berakhiran .bin, ganti menjadi .mp4
+        if (str_ends_with($value, '.bin')) {
+            $this->attributes['dir'] = str_replace('.bin', '.mp4', $value);
+        } else {
+            $this->attributes['dir'] = $value;
+        }
+    }
+
     public function User()
     {
         return $this->belongsTo(User::class, 'id_user', 'id');
