@@ -13,7 +13,6 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-
 @app.route("/compress", methods=["POST"])
 def compress_video():
     if "file" not in request.files:
