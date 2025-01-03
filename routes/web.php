@@ -17,15 +17,10 @@ Route::get('/', function () {
 Route::get('/main', [MainController::class, 'index'])->middleware('auth');
 Route::post('/main', [MainController::class, 'compressVideo'])->middleware('auth');
 
-Route::get('/download-file/{filename}', function ($filename) {
-    $filePath = public_path('uploads' . DIRECTORY_SEPARATOR . $filename);
-
-    if (file_exists($filePath)) {
-        return response()->download($filePath, $filename);
-    } else {
-        abort(404, 'File not found.');
-    }
-})->name('download.file');
+// Route::get('/download-file/{filename}', function ($filename) {
+//     $flask_url = "http://127.0.0.1:5000/download_video/{$filename}";
+//     return redirect($flask_url);
+// })->name('download.file');
 
 
 

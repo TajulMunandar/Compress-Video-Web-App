@@ -122,13 +122,9 @@
                             <td>{{ $history->comp }} </td> <!-- Convert to MB -->
                             <td>{{ $history->created_at->format('Y-m-d H:i:s') }}</td>
                             <td>
-                                @php
-                                    $path = str_replace('\\', '/', $history->dir);
-                                @endphp
-                                <a class="btn btn-info text-white"
-                                    href="{{ route('download.file', basename($history->dir)) }}">
-                                    <i class="bi bi-download"></i>
-                                </a>
+                            <button class="btn btn-info text-white" id="downloadBtn" data-url="{{ $history->dirVid }}">
+                                <i class="bi bi-download"></i>
+                            </button>
                             </td>
 
                             <td>
@@ -150,15 +146,7 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        @php
-                                            // Ganti ekstensi file dari .mp4 ke .png
-                                            $imagePath = str_replace(
-                                                ['public/', '\\', '.mp4'],
-                                                ['', '/', '.png'],
-                                                $history->dir,
-                                            );
-                                        @endphp
-                                        <img src="{{ asset($imagePath) }}" alt="Thumbnail"
+                                        <img src="{{ $history->dirGraf }}" alt="Thumbnail"
                                             style="width: 100%; height: auto;">
                                     </div>
                                     <div class="modal-footer">
@@ -231,8 +219,12 @@
                 submitBtn.classList.add('d-none');
                 loadingAnimation.style.display = 'block';
                 var file = preOrderUpload.files[0];
+                var userId = @json(Auth::user()->id);
+                var count = @json(Auth::user()->count);
                 var formData = new FormData();
                 formData.append('file', file); // Sesuaikan dengan nama input
+                formData.append('count', count); // Sesuaikan dengan nama input
+                formData.append('userId', userId); // Sesuaikan dengan nama input
 
                 fetch('http://127.0.0.1:5000/compress', { // Ganti dengan URL Flask Anda
                         method: 'POST',
@@ -245,11 +237,11 @@
                     .then(data => {
                         console.log('Data:', data); // Lihat apa isi datanya
                         if (data.message) {
-                            alert('Video berhasil dikompres: ' + data.compressed_file_path);
+                            alert('Video berhasil dikompres: ' + data.original_name);
                             console.log('Ukuran Asli:', data.original_size, 'bytes');
                             console.log('Ukuran Setelah Kompres:', data.compressed_size, 'bytes');
                             saveVideoData(data.original_size, data.compressed_size, data
-                                .compressed_file_path, data.original_name);
+                                .compressed_file, data.original_name, data.grafic_file);
                         } else {
                             alert('Terjadi kesalahan saat mengompresi video');
                         }
@@ -263,7 +255,7 @@
                     });
             });
 
-            function saveVideoData(originalSize, compressedSize, compressedFilePath, original_name) {
+            function saveVideoData(original_size, compressed_size, compressed_file, original_name, grafic_file) {
                 // Implement API call to save data to Laravel backend
                 fetch('/main', {
                         method: 'POST',
@@ -273,9 +265,10 @@
                         },
                         body: JSON.stringify({
                             name: original_name, // Use the original file name
-                            ori: originalSize,
-                            comp: compressedSize,
-                            dir: compressedFilePath
+                            ori: original_size,
+                            comp: compressed_size,
+                            dirVid: compressed_file,
+                            dirGraf: grafic_file
                         })
                     })
                     .then(response => response.json())
@@ -292,7 +285,40 @@
             }
         });
     </script>
+    <script>
+        // Fungsi untuk mendownload file menggunakan POST
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const videoUrl = this.getAttribute('data-url'); // Ambil URL dari atribut data-url
+            const formData = new FormData();
+            formData.append('video_id', videoUrl);  // Mengirimkan video_id ke Flask
 
+            fetch('http://127.0.0.1:5000/download', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Jika respons berhasil, ambil file dalam bentuk blob
+                    return response.blob();
+                }
+                throw new Error('File tidak ditemukan');
+            })
+            .then(blob => {
+                // Membuat URL Blob dan mengunduh file
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = videoUrl.split('/').pop();  // Mengambil nama file dari URL
+                link.click();
+
+                // Revoke URL setelah pengunduhan selesai
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error('Terjadi kesalahan:', error);
+            });
+        });
+    </script>
 </body>
 
 </html>

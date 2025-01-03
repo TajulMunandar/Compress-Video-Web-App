@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->double('ori');
             $table->double('comp');
-            $table->string('dir');
+            $table->string('dirVid');
+            $table->string('dirGraf');
             $table->foreignId('id_user')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });

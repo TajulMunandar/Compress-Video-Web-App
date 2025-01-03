@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->boolean('isAdmin');
+            $table->integer('count')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
