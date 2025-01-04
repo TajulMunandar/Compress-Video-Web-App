@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import os
 import re
+import subprocess
 import heapq
 from collections import defaultdict
 import matplotlib
@@ -93,11 +94,40 @@ def decompress(compressed_bytes, codes, padding):
 
     return bytes(decompressed_data)
 
+def extract_audio(input_video_path, audio_output_path):
+    """Ekstrak audio dari video asli menggunakan ffmpeg."""
+    command = [
+        'ffmpeg',
+        '-i', input_video_path,          # Input video
+        '-vn',                           # No video
+        '-acodec', 'aac',                # Gunakan codec audio AAC
+        '-ab', '192k',                   # Set bitrate audio
+        '-ar', '44100',                  # Set sample rate
+        '-y', audio_output_path          # Output audio file path
+    ]
+    subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+def add_audio_to_video(video_input_path, audio_input_path, output_video_path):
+    """Gabungkan audio dengan video terkompresi menggunakan ffmpeg."""
+    command = [
+        'ffmpeg',
+        '-i', video_input_path,          # Input video
+        '-i', audio_input_path,          # Input audio
+        '-c:v', 'copy',                  # Salin video codec tanpa kompresi ulang
+        '-c:a', 'aac',                   # Gunakan codec audio AAC
+        '-strict', 'experimental',       # Mengizinkan format audio eksperimental
+        '-y', output_video_path          # Output video dengan audio
+    ]
+    subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def compress_video(input_video_path, output_video_path, codec='mp4v', userId=0, count=0):
     cap = cv2.VideoCapture(input_video_path)
     if not cap.isOpened():
         raise FileNotFoundError(f"Cannot open video file: {input_video_path}")
+    
+    # Ekstrak audio dari video asli
+    audio_file_path = os.path.join(app.config['UPLOAD_FOLDER'], f'audio_{userId}_{count}.aac')
+    extract_audio(input_video_path, audio_file_path)
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -167,6 +197,14 @@ def compress_video(input_video_path, output_video_path, codec='mp4v', userId=0, 
         print(f"Video processing complete. Processed {processed_frames}/{total_frames} frames.")
         print(f"Original duration: {original_duration:.2f}s, Output duration: {actual_time:.2f}s")
 
+        # Gabungkan audio kembali ke video terkompresi
+        final_output_path = os.path.join(app.config['STATIC_FOLDER'], f'final_compressed_video_{userId}_{count}.mp4')
+        add_audio_to_video(output_video_path, audio_file_path, final_output_path)
+
+        # Hapus file audio sementara setelah digunakan
+        os.remove(audio_file_path)
+        os.remove(output_video_path)
+
         # Plot ukuran original vs ukuran terkompresi
         plt.figure(figsize=(10, 6))
         plt.plot(original_sizes, label="Original Frame Size", color="blue", linestyle='-', linewidth=2)
@@ -214,7 +252,7 @@ def upload_video():
             compress_video(filepath, output_filename, codec, userId, count)
             # URL file untuk akses di Laravel
             # Nama file terkompresi
-            compressed_name = f"compressed_video_{userId}_{count}.{file_extension}"
+            compressed_name = f"final_compressed_video_{userId}_{count}.{file_extension}"
             compressed_path = os.path.join(app.config['STATIC_FOLDER'], compressed_name)
             # Dapatkan ukuran file terkompresi
             compressed_size = os.path.getsize(compressed_path)

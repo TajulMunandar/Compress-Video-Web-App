@@ -286,36 +286,37 @@
         });
     </script>
     <script>
-        // Fungsi untuk mendownload file menggunakan POST
-        document.getElementById('downloadBtn').addEventListener('click', function() {
-            const videoUrl = this.getAttribute('data-url'); // Ambil URL dari atribut data-url
-            const formData = new FormData();
-            formData.append('video_id', videoUrl);  // Mengirimkan video_id ke Flask
+        document.querySelectorAll('#downloadBtn').forEach(button => {
+            button.addEventListener('click', function() {
+                const videoUrl = this.getAttribute('data-url'); // Ambil URL dari atribut data-url
+                const formData = new FormData();
+                formData.append('video_id', videoUrl);  // Mengirimkan video_id ke Flask
 
-            fetch('http://127.0.0.1:5000/download', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Jika respons berhasil, ambil file dalam bentuk blob
-                    return response.blob();
-                }
-                throw new Error('File tidak ditemukan');
-            })
-            .then(blob => {
-                // Membuat URL Blob dan mengunduh file
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = videoUrl.split('/').pop();  // Mengambil nama file dari URL
-                link.click();
+                fetch('http://127.0.0.1:5000/download', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Jika respons berhasil, ambil file dalam bentuk blob
+                        return response.blob();
+                    }
+                    throw new Error('File tidak ditemukan');
+                })
+                .then(blob => {
+                    // Membuat URL Blob dan mengunduh file
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = videoUrl.split('/').pop();  // Mengambil nama file dari URL
+                    link.click();
 
-                // Revoke URL setelah pengunduhan selesai
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(error => {
-                console.error('Terjadi kesalahan:', error);
+                    // Revoke URL setelah pengunduhan selesai
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Terjadi kesalahan:', error);
+                });
             });
         });
     </script>
