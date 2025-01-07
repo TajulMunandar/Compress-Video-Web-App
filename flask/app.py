@@ -156,6 +156,9 @@ def compress_video(input_video_path, output_video_path, codec='mp4v', userId=0, 
             if not ret:
                 print(f"Frame {frame_counter + 1} could not be read. Using last valid frame as dummy.")
                 dummy_frame = last_valid_frame if last_valid_frame is not None else np.zeros((desired_height, desired_width, 3), dtype=np.uint8)
+                original_size = dummy_frame.nbytes
+                original_sizes.append(original_size)
+                compressed_sizes.append(original_size) # Menggunakan ukuran original sebagai fallback untuk grafik
                 out.write(dummy_frame)
                 actual_time += time_per_frame
                 continue
