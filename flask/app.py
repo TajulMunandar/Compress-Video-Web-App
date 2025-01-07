@@ -121,6 +121,8 @@ def add_audio_to_video(video_input_path, audio_input_path, output_video_path):
     subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def compress_video(input_video_path, output_video_path, codec='mp4v', userId=0, count=0):
+    file_extension = input_video_path.rsplit('.', 1)[1].lower()
+    
     cap = cv2.VideoCapture(input_video_path)
     if not cap.isOpened():
         raise FileNotFoundError(f"Cannot open video file: {input_video_path}")
@@ -134,7 +136,7 @@ def compress_video(input_video_path, output_video_path, codec='mp4v', userId=0, 
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
     original_duration = total_frames / fps
-    target_resolution=( int(frame_width * 0.2), int(frame_height * 0.2))
+    target_resolution=( int(frame_width * 0.15), int(frame_height * 0.15))
     desired_width, desired_height = target_resolution
     fourcc = cv2.VideoWriter_fourcc(*codec)
     out = cv2.VideoWriter(output_video_path, fourcc, fps, (desired_width, desired_height))
@@ -198,7 +200,7 @@ def compress_video(input_video_path, output_video_path, codec='mp4v', userId=0, 
         print(f"Original duration: {original_duration:.2f}s, Output duration: {actual_time:.2f}s")
 
         # Gabungkan audio kembali ke video terkompresi
-        final_output_path = os.path.join(app.config['STATIC_FOLDER'], f'final_compressed_video_{userId}_{count}.mp4')
+        final_output_path = os.path.join(app.config['STATIC_FOLDER'], f'final_compressed_video_{userId}_{count}.{file_extension}')
         add_audio_to_video(output_video_path, audio_file_path, final_output_path)
 
         # Hapus file audio sementara setelah digunakan
@@ -232,6 +234,15 @@ def upload_video():
         # Save the file
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filepath)
+
+        # Validate file size (20 MB = 20 * 1024 * 1024 bytes)
+        max_file_size = 20 * 1024 * 1024
+        file_size = os.path.getsize(filepath)
+
+        if file_size > max_file_size:
+            os.remove(filepath)  # Clean up the temporary file
+            return jsonify({"error": "File size exceeds 20 MB. Please upload a smaller file."}), 400
+
 
         file_extension = file.filename.rsplit('.', 1)[1].lower()
         codec = {'mp4': 'mp4v', 'mkv': 'XVID', 'mov': 'mp4v'}.get(file_extension, None)
@@ -273,7 +284,7 @@ def upload_video():
             print(f"Error during video compression: {e}")
             return jsonify({"error": f"An error occurred during video compression: {str(e)}"}), 500  # Error dalam format JSON
 
-    return jsonify({"error": "File not allowed"}), 400  # Error dalam format JSON
+    return jsonify({"error": "Unsupported file format. Only mp4, mov, and mkv are allowed."}), 400  # Error dalam format JSON
 
 @app.route('/download', methods=['POST'])
 def download_file():

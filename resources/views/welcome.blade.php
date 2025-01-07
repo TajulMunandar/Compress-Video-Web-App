@@ -242,8 +242,8 @@
                             console.log('Ukuran Setelah Kompres:', data.compressed_size, 'bytes');
                             saveVideoData(data.original_size, data.compressed_size, data
                                 .compressed_file, data.original_name, data.grafic_file);
-                        } else {
-                            alert('Terjadi kesalahan saat mengompresi video');
+                        } else if(data.error) {
+                            alert(`Error: ${data.error}`);
                         }
                     })
                     .catch(error => {
