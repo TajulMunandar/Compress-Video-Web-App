@@ -45,8 +45,8 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $history->name }}</td>
-                                        <td>{{ $history->ori }}</td> <!-- Convert to MB -->
-                                        <td>{{ $history->comp }} </td> <!-- Convert to MB -->
+                                        <td>{{ number_format($history->ori) }}</td> <!-- Convert to MB -->
+                                        <td>{{ number_format($history->comp) }}</td> <!-- Convert to MB -->
                                         <td>
                                             <a class="btn btn-info text-white" href="#"
                                                 download="{{ $history->dir }}">

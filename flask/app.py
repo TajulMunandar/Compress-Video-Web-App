@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
-UPLOAD_FOLDER = 'uploads'
-STATIC_FOLDER = 'static'
+UPLOAD_FOLDER = 'flask/uploads'
+STATIC_FOLDER = 'flask/static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['STATIC_FOLDER'] = STATIC_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = {'mp4', 'mkv', 'mov'}
@@ -122,11 +122,11 @@ def add_audio_to_video(video_input_path, audio_input_path, output_video_path):
 
 def compress_video(input_video_path, output_video_path, codec='mp4v', userId=0, count=0):
     file_extension = input_video_path.rsplit('.', 1)[1].lower()
-    
+
     cap = cv2.VideoCapture(input_video_path)
     if not cap.isOpened():
         raise FileNotFoundError(f"Cannot open video file: {input_video_path}")
-    
+
     # Ekstrak audio dari video asli
     audio_file_path = os.path.join(app.config['UPLOAD_FOLDER'], f'audio_{userId}_{count}.aac')
     extract_audio(input_video_path, audio_file_path)
@@ -231,7 +231,7 @@ def upload_video():
     userId = request.form.get("userId")
     count = request.form.get("count")
     if not file or file.filename == '':
-        return jsonify({"error": "No file selected"}), 400 
+        return jsonify({"error": "No file selected"}), 400
 
     if allowed_file(file.filename):
         # Save the file
@@ -257,11 +257,11 @@ def upload_video():
         if codec is None:
             return jsonify({"error": "Unsupported file format"}), 400  # Error dalam format JSON
 
-        videoname = file.filename 
+        videoname = file.filename
         # Menggunakan os.path.splitext untuk menghapus ekstensi
         file_name_no_ext = os.path.splitext(videoname)[0]
         output_filename = os.path.join(app.config['STATIC_FOLDER'], f'compressed_video_{userId}_{count}.{file_extension}')
-    
+
         try:
             compress_video(filepath, output_filename, codec, userId, count)
             # URL file untuk akses di Laravel
@@ -293,7 +293,7 @@ def upload_video():
 def download_file():
     # Ambil video_id dari form data
     video_id = request.form.get('video_id')
-    
+
     if video_id:
         # Pangkas URL dan ambil bagian setelah 'static/'
         # Misalnya: http://127.0.0.1:5000/static/your/video.mp4 menjadi your/video.mp4

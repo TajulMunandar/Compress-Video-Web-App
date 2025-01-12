@@ -118,13 +118,14 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $history->name }}</td>
-                            <td>{{ $history->ori }}</td> <!-- Convert to MB -->
-                            <td>{{ $history->comp }} </td> <!-- Convert to MB -->
+                            <td>{{ number_format($history->ori) }}</td> <!-- Convert to MB -->
+                            <td>{{ number_format($history->comp) }}</td> <!-- Convert to MB -->
                             <td>{{ $history->created_at->format('Y-m-d H:i:s') }}</td>
                             <td>
-                            <button class="btn btn-info text-white" id="downloadBtn" data-url="{{ $history->dirVid }}">
-                                <i class="bi bi-download"></i>
-                            </button>
+                                <button class="btn btn-info text-white" id="downloadBtn"
+                                    data-url="{{ $history->dirVid }}">
+                                    <i class="bi bi-download"></i>
+                                </button>
                             </td>
 
                             <td>
@@ -242,7 +243,7 @@
                             console.log('Ukuran Setelah Kompres:', data.compressed_size, 'bytes');
                             saveVideoData(data.original_size, data.compressed_size, data
                                 .compressed_file, data.original_name, data.grafic_file);
-                        } else if(data.error) {
+                        } else if (data.error) {
                             alert(`Error: ${data.error}`);
                         }
                     })
@@ -290,33 +291,33 @@
             button.addEventListener('click', function() {
                 const videoUrl = this.getAttribute('data-url'); // Ambil URL dari atribut data-url
                 const formData = new FormData();
-                formData.append('video_id', videoUrl);  // Mengirimkan video_id ke Flask
+                formData.append('video_id', videoUrl); // Mengirimkan video_id ke Flask
 
                 fetch('http://127.0.0.1:5000/download', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (response.ok) {
-                        // Jika respons berhasil, ambil file dalam bentuk blob
-                        return response.blob();
-                    }
-                    throw new Error('File tidak ditemukan');
-                })
-                .then(blob => {
-                    // Membuat URL Blob dan mengunduh file
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = videoUrl.split('/').pop();  // Mengambil nama file dari URL
-                    link.click();
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Jika respons berhasil, ambil file dalam bentuk blob
+                            return response.blob();
+                        }
+                        throw new Error('File tidak ditemukan');
+                    })
+                    .then(blob => {
+                        // Membuat URL Blob dan mengunduh file
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = videoUrl.split('/').pop(); // Mengambil nama file dari URL
+                        link.click();
 
-                    // Revoke URL setelah pengunduhan selesai
-                    window.URL.revokeObjectURL(url);
-                })
-                .catch(error => {
-                    console.error('Terjadi kesalahan:', error);
-                });
+                        // Revoke URL setelah pengunduhan selesai
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch(error => {
+                        console.error('Terjadi kesalahan:', error);
+                    });
             });
         });
     </script>
